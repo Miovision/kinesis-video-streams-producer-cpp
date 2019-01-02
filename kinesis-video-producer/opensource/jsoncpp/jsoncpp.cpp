@@ -249,7 +249,7 @@ static inline void fixNumericLocaleInput(char* begin, char* end) {
 #define snprintf snprintf
 #elif __cplusplus >= 201103L
 #if !defined(__MINGW32__) && !defined(__CYGWIN__)
-#define snprintf std::snprintf
+//#define snprintf std::snprintf
 #endif
 #endif
 
@@ -4161,7 +4161,7 @@ Value& Path::make(Value& root) const {
 #else
 #include <cmath>
 #if !(defined(__QNXNTO__)) // QNX already defines isfinite
-#define isfinite std::isfinite
+//#define isfinite std::isfinite
 #endif
 #endif
 
@@ -4177,7 +4177,7 @@ Value& Path::make(Value& root) const {
 #define snprintf snprintf
 #elif __cplusplus >= 201103L
 #if !defined(__MINGW32__) && !defined(__CYGWIN__)
-#define snprintf std::snprintf
+//#define snprintf std::snprintf
 #endif
 #endif
 

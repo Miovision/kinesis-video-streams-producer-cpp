@@ -13,7 +13,7 @@
 #include "Logger.h"
 #include "Auth.h"
 #include "KinesisVideoProducerMetrics.h"
-
+#include "mkunique.h"
 #include <cstring>
 
 #include <memory>

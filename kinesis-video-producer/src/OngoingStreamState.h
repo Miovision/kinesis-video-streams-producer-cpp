@@ -10,6 +10,7 @@
 #include <curl/curl.h>
 #include <string>
 #include <mutex>
+#include <memory>
 #include <fstream>
 
 #include "Logger.h"

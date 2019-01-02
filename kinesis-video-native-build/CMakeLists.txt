@@ -18,47 +18,6 @@ else()
     set(KINESIS_VIDEO_PRODUCER_SRC "../kinesis-video-producer")
 endif()
 
-if(DEFINED ENV{KINESIS_VIDEO_PRODUCER_JNI_SRC})
-    set(KINESIS_VIDEO_PRODUCER_JNI_SRC $ENV{KINESIS_VIDEO_PRODUCER_JNI_SRC})
-else()
-    set(KINESIS_VIDEO_PRODUCER_JNI_SRC "../kinesis-video-producer-jni")
-endif()
-
-if(DEFINED ENV{KINESIS_VIDEO_OPEN_SOURCE_SRC})
-    set(KINESIS_VIDEO_OPEN_SOURCE_SRC $ENV{KINESIS_VIDEO_OPEN_SOURCE_SRC})
-else()
-    set(KINESIS_VIDEO_OPEN_SOURCE_SRC "${PROJECT_BINARY_DIR}/downloads")
-endif()
-
-if(DEFINED ENV{KINESIS_VIDEO_GST_DEMO_SRC})
-    set(KINESIS_VIDEO_GST_DEMO_SRC $ENV{KINESIS_VIDEO_GST_DEMO_SRC})
-else()
-    set(KINESIS_VIDEO_GST_DEMO_SRC "../kinesis-video-gst-demo")
-endif()
-
-if(DEFINED ENV{PLUGIN_PRJ_DIR})
-    set(PLUGIN_PRJ_DIR $ENV{PLUGIN_PRJ_DIR})
-else()
-    set(PLUGIN_PRJ_DIR "../kinesis-video-gstreamer-plugin")
-endif()
-
-if (DEFINED ENV{KINESIS_VIDEO_GST_PLUGIN_SRC})
-    set(KINESIS_VIDEO_GST_PLUGIN_SRC $ENV{KINESIS_VIDEO_GST_PLUGIN_SRC})
-else ()
-    set(KINESIS_VIDEO_GST_PLUGIN_SRC "${PLUGIN_PRJ_DIR}/plugin-src")
-endif ()
-
-if (DEFINED ENV{KINESIS_VIDEO_GST_PLUGIN_DEMO_SRC})
-    set(KINESIS_VIDEO_GST_PLUGIN_DEMO_SRC $ENV{KINESIS_VIDEO_GST_PLUGIN_DEMO_SRC})
-else ()
-    set(KINESIS_VIDEO_GST_PLUGIN_DEMO_SRC "${PLUGIN_PRJ_DIR}/demo-src")
-endif ()
-
-if(DEFINED ENV{JAVA_HOME})
-    set(JAVA_HOME $ENV{JAVA_HOME})
-else()
-    set(JAVA_HOME "C:/Program Files/Java/jdk1.8.0_171")
-endif()
 
 message(STATUS "System name is ${CMAKE_SYSTEM_NAME}")
 
@@ -66,9 +25,6 @@ STRING(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER_CASE)
 
 message(STATUS "Kinesis Video PIC path is ${KINESIS_VIDEO_PIC_SRC}")
 message(STATUS "Kinesis Video Producer path is ${KINESIS_VIDEO_PRODUCER_SRC}")
-message(STATUS "Kinesis Video JNI path is ${KINESIS_VIDEO_PRODUCER_JNI_SRC}")
-message(STATUS "Kinesis Video Gstreamer demp app path is ${KINESIS_VIDEO_GST_DEMO_SRC}")
-message(STATUS "Kinesis Video Open Source path is ${KINESIS_VIDEO_OPEN_SOURCE_SRC}")
 
 message(STATUS "Configuration ${CMAKE_GENERATOR}")
 
@@ -127,82 +83,39 @@ endif()
 if(NOT BUILD_JNI_ONLY AND (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
   find_package(PkgConfig REQUIRED)
 
-  pkg_check_modules (CRYPTO       REQUIRED   libcrypto)
-  pkg_check_modules (CURL         REQUIRED   libcurl)
-  pkg_check_modules (LOG4CPLUS    REQUIRED   log4cplus=1.2.0)
-  pkg_check_modules (SSL          REQUIRED   libssl)
+  #pkg_check_modules (CRYPTO       REQUIRED   libcrypto)
+  #pkg_check_modules (CURL         REQUIRED   libcurl)
+  #pkg_check_modules (SSL          REQUIRED   libssl)
+ 
+  set(CURL_INCLUDE_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/include)
+  set(CRYPTO_INCLUDE_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/include)
+  set(SSL_INCLUDE_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/include)
+  set(SSL_LIBRARY_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/lib)
+  set(CURL_LIBRARY_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/lib)
+  set(CRYPTO_LIBRARY_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/lib)
+  set(CRYPTO_LIBRARIES -lcrypto -ldl)
+  set(CRYPTO_LIBRARIES -lssl -lcrypto -ldl)
+  set(CRYPTO_LIBRARIES  -lcurl -lcrypto -lssl -lssh2 -lidn -lz -ldl)
 
-  if (NOT BUILD_PRODUCER_ONLY)
-    pkg_check_modules (GLIB2        REQUIRED   glib-2.0)
-    pkg_check_modules (GST          REQUIRED   gstreamer-1.0)
-    pkg_check_modules (GST_APP      REQUIRED   gstreamer-app-1.0)
-    pkg_check_modules (GOBJ2        REQUIRED   gobject-2.0)
-    pkg_check_modules (GST_CHECK    REQUIRED   gstreamer-check-1.0)
-    pkg_check_modules (GST_BASE     REQUIRED   gstreamer-base-1.0)
-  endif()
 
-  if (NOT NO_UNIT_TEST)
-    find_library(GTEST NAMES gtest REQUIRED HINTS ${LIBRARY_PATH} PATH_SUFFIXES lib)
-    find_library(GTEST_MAIN NAMES gtest_main REQUIRED HINTS ${LIBRARY_PATH} PATH_SUFFIXES lib)
-  endif()
 
   set(OPEN_SRC_INCLUDE_DIRS
-          ${GLIB2_INCLUDE_DIRS}
           ${CRYPTO_INCLUDE_DIRS}
-          ${CURL_INCLUDE_DIRS}
-          ${GST_APP_INCLUDE_DIRS}
-          ${GST_INCLUDE_DIRS}
-          ${LOG4CPLUS_INCLUDE_DIRS}
-          ${GOBJ2_INCLUDE_DIRS}
+	  ${CURL_INCLUDE_DIRS}
           ${SSL_INCLUDE_DIRS}
-          ${GTEST_INCLUDE_DIRS}
-          ${GTEST_MAIN_INCLUDE_DIRS}
-          ${GST_CHECK_INCLUDE_DIRS}
-          ${GST_BASE_INCLUDE_DIRS})
+          )
 
   set(OPEN_SRC_LIBRARY_DIRS
-          ${GLIB2_LIBRARY_DIRS}
           ${CRYPTO_LIBRARY_DIRS}
-          ${CURL_LIBRARY_DIRS}
-          ${GST_APP_LIBRARY_DIRS}
-          ${GST_LIBRARY_DIRS}
-          ${LOG4CPLUS_LIBRARY_DIRS}
-          ${GOBJ2_LIBRARY_DIRS}
+	  ${CURL_LIBRARY_DIRS}
           ${SSL_LIBRARY_DIRS}
-          ${GTEST_LIBRARY_DIRS}
-          ${GTEST_MAIN_LIBRARY_DIRS}
-          ${GST_CHECK_LIBRARY_DIRS}
-          ${GST_BASE_LIBRARY_DIRS})
+         ) 
 
   set(PRODUCER_LIBRARIES
           ${CRYPTO_LIBRARIES}
+	  ${CURL_LIBRARIES}
           ${SSL_LIBRARIES}
-          ${CURL_LIBRARIES}
-          ${LOG4CPLUS_LIBRARIES}
-          ${GOBJ2_LIBRARIES})
-
-  set(GST_DEMO_LIBRARIES
-          ${GLIB2_LIBRARIES}
-          ${GST_APP_LIBRARIES}
-          ${GST_LIBRARIES}
-          ${GOBJ2_LIBRARIES}
-          ${EXE_LIBRARIES})
-
-  set(KVSSINK_LIBRARIES
-          ${GST_LIBRARIES}
-          ${GST_APP_LIBRARIES}
-          ${GLIB2_LIBRARIES}
-          ${LOG4CPLUS_LIBRARIES}
-          ${GOBJ2_LIBRARIES}
-          ${GST_BASE_LIBRARIES}
-          ${CURL_LIBRARIES}
-          ${CRYPTO_LIBRARIES})
-
-  set(KVSSINK_DEMO_LIBRARIES
-          ${GLIB2_LIBRARIES}
-          ${GST_LIBRARIES}
-          ${GOBJ2_LIBRARIES}
-          ${EXE_LIBRARIES})
+         )
 endif()
 
 set(PIC_SOURCE_FILES
@@ -322,91 +235,6 @@ set(PRODUCER_SOURCE_FILES
         ${KINESIS_VIDEO_PRODUCER_SRC}/src/credential-providers/RotatingStaticCredentialProvider.cpp
         ${KINESIS_VIDEO_PRODUCER_SRC}/opensource/jsoncpp/jsoncpp.cpp)
 
-set(TST_PRODUCER_SOURCE_FILES
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/ClientApiFunctionalityTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/ClientApiTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/StreamPutGetTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/ClientTestFixture.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/ClientTestFixture.h
-        #${KINESIS_VIDEO_PIC_SRC}/src/client/tst/main.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/StreamApiFunctionalityTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/StreamApiServiceCallsTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/StreamApiTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/StreamDeviceTagsTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/StreamParallelTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/StreamStateTransitionsTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/client/tst/StreamTokenRotationTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/heap/tst/HeapApiFunctionalityTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/heap/tst/HeapApiTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/heap/tst/HeapTestFixture.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/heap/tst/HeapTestFixture.h
-        ${KINESIS_VIDEO_PIC_SRC}/src/heap/tst/HybridHeapTest.cpp
-        #${KINESIS_VIDEO_PIC_SRC}/src/heap/tst/main.cpp
-        #${KINESIS_VIDEO_PIC_SRC}/src/mkvgen/tst/main.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/mkvgen/tst/MkvgenApiFunctionalityTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/mkvgen/tst/MkvgenApiTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/mkvgen/tst/MkvgenTestFixture.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/mkvgen/tst/MkvgenTestFixture.h
-        ${KINESIS_VIDEO_PIC_SRC}/src/mkvgen/tst/AnnexBNalAdapterTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/mkvgen/tst/AnnexBCpdNalAdapterTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/mkvgen/tst/AvccNalAdapterTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/mkvgen/tst/SpsParserTest.cpp
-        #${KINESIS_VIDEO_PIC_SRC}/src/trace/tst/main.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/trace/tst/TraceApiFunctionalityTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/trace/tst/TraceApiTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/trace/tst/TraceTestFixture.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/trace/tst/TraceTestFixture.h
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/BitField.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/BitReader.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/Directory.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/Thread.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/DoubleLinkedList.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/HashTable.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/IntegerToString.cpp
-        #${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/main.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/SingleLinkedList.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/StackQueue.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/StringToInteger.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/utils/tst/UtilTestFixture.cpp
-	#${KINESIS_VIDEO_PIC_SRC}/src/view/tst/main.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/view/tst/ViewApiFunctionalityTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/view/tst/ViewApiTest.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/view/tst/ViewTestFixture.cpp
-        ${KINESIS_VIDEO_PIC_SRC}/src/view/tst/ViewTestFixture.h
-
-        ${KINESIS_VIDEO_PRODUCER_SRC}/tst/ProducerTestFixture.h
-        ${KINESIS_VIDEO_PRODUCER_SRC}/tst/ProducerTestFixture.cpp
-        ${KINESIS_VIDEO_PRODUCER_SRC}/tst/main.cpp
-        ${KINESIS_VIDEO_PRODUCER_SRC}/tst/ProducerApiTest.cpp)
-
-set(PRODUCER_SOURCE_FILES_JNI
-        ${KINESIS_VIDEO_PRODUCER_JNI_SRC}/src/source/com/amazonaws/kinesis/video/producer/jni/KinesisVideoClientWrapper.cpp
-        ${KINESIS_VIDEO_PRODUCER_JNI_SRC}/src/source/com/amazonaws/kinesis/video/producer/jni/NativeProducerInterface.cpp
-        ${KINESIS_VIDEO_PRODUCER_JNI_SRC}/src/source/com/amazonaws/kinesis/video/producer/jni/Parameters.cpp)
-
-set(GST_DEMO_APP
-        ${KINESIS_VIDEO_GST_DEMO_SRC}/kinesis_video_gstreamer_sample_app.cpp)
-
-
-set(RTSP_DEMO_APP
-        ${KINESIS_VIDEO_GST_DEMO_SRC}/kinesis_video_gstreamer_sample_rtsp_app.cpp)
-
-set(GST_PLUGIN_SOURCE_FILES
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/gstkvssink.cpp
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/gstkvssink.h
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/KvsSinkStreamCallbackProvider.h
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/KvsSinkStreamCallbackProvider.cpp
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/KvsSinkClientCallbackProvider.h
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/KvsSinkClientCallbackProvider.cpp
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/KvsSinkDeviceInfoProvider.h
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/KvsSinkDeviceInfoProvider.cpp
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/StreamLatencyStateMachine.h
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/StreamLatencyStateMachine.cpp
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/ConnectionStaleStateMachine.h
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/ConnectionStaleStateMachine.cpp
-        ${KINESIS_VIDEO_GST_PLUGIN_SRC}/Util/KvsSinkUtil.h
-	${KINESIS_VIDEO_GST_PLUGIN_SRC}/Util/KvsSinkUtil.cpp)
-
 include_directories(${KINESIS_VIDEO_PIC_SRC})
 include_directories(${KINESIS_VIDEO_PIC_SRC}/src/client/include)
 include_directories(${KINESIS_VIDEO_PIC_SRC}/src/client/include/com/amazonaws/kinesis/video/client)
@@ -435,20 +263,7 @@ include_directories(${KINESIS_VIDEO_PRODUCER_SRC}/tst)
 include_directories(${KINESIS_VIDEO_PRODUCER_SRC}/src/credential-providers)
 include_directories(${KINESIS_VIDEO_PRODUCER_JNI_SRC}/src/include/)
 include_directories(${OPEN_SRC_INCLUDE_DIRS})
-include_directories(/System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers)
-include_directories(${JAVA_HOME}/include)
-include_directories(${JAVA_HOME}/include/${CMAKE_SYSTEM_NAME_LOWER_CASE})
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  include_directories("${JAVA_HOME}/include/win32")
-  include_directories("${KINESIS_VIDEO_OPEN_SOURCE_SRC}/googletest-release-1.8.0/googletest/include")
-  include_directories("${KINESIS_VIDEO_OPEN_SOURCE_SRC}/log4cplus-1.2.1/include")
-  include_directories("${KINESIS_VIDEO_OPEN_SOURCE_SRC}/curl-7.60.0/builds/libcurl-vc15-${KINESIS_VIDEO_BUILD_BITNESS}-release-static-sspi-winssl/include")
-  include_directories("${KINESIS_VIDEO_OPEN_SOURCE_SRC}/openssl-OpenSSL_1_1_0f/OpenSSL/include")
-  include_directories("${KINESIS_VIDEO_OPEN_SOURCE_SRC}/gstreamer/1.0/${KINESIS_VIDEO_BUILD_BITNESS_NAME}/include/gstreamer-1.0")
-  include_directories("${KINESIS_VIDEO_OPEN_SOURCE_SRC}/gstreamer/1.0/${KINESIS_VIDEO_BUILD_BITNESS_NAME}/include/glib-2.0")
-  include_directories("${KINESIS_VIDEO_OPEN_SOURCE_SRC}/gstreamer/1.0/${KINESIS_VIDEO_BUILD_BITNESS_NAME}/lib/glib-2.0/include")
-endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows" AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   macro(FORCE_MSVS_CRT_TYPE)
@@ -571,50 +386,5 @@ else()
   add_library(producer SHARED ${PRODUCER_SOURCE_FILES})
   target_link_libraries(producer
           ${PRODUCER_LIBRARIES}
-          ${GTEST}
-          ${GTEST_MAIN})
-
-  add_library(KinesisVideoProducerJNI SHARED EXCLUDE_FROM_ALL ${PRODUCER_SOURCE_FILES_JNI} ${PIC_SOURCE_FILES})
-  target_link_libraries(KinesisVideoProducerJNI)
-
-  add_executable(start ${TST_PRODUCER_SOURCE_FILES})
-  target_link_libraries(start
-          producer
-          Threads::Threads
-          ${CMAKE_DL_LIBS}
-          ${LOG4CPLUS_LIBRARIES})
-
-  add_executable(kinesis_video_gstreamer_sample_app ${GST_DEMO_APP})
-  target_link_libraries(kinesis_video_gstreamer_sample_app
-          producer
-          ${GST_DEMO_LIBRARIES})
-
-  add_executable(kinesis_video_gstreamer_sample_rtsp_app ${RTSP_DEMO_APP})
-  target_link_libraries(kinesis_video_gstreamer_sample_rtsp_app
-          producer
-          ${GST_DEMO_LIBRARIES})
-
-  add_executable(kinesis_video_gstreamer_sample_multistream_app ${KINESIS_VIDEO_GST_DEMO_SRC}/kinesis_video_gstreamer_sample_multistream_app.cpp)
-  target_link_libraries(kinesis_video_gstreamer_sample_multistream_app
-          producer
-          ${GST_DEMO_LIBRARIES})
-
-  add_library(gstkvssink MODULE ${GST_PLUGIN_SOURCE_FILES})
-  target_link_libraries(gstkvssink
-          ${KVSSINK_LIBRARIES}
-          producer)
-
-  add_executable(kvs_producer_plugin_demo ${KINESIS_VIDEO_GST_PLUGIN_DEMO_SRC}/kvs_producer_plugin_demo.cpp)
-  target_link_libraries(kvs_producer_plugin_demo
-          ${KVSSINK_DEMO_LIBRARIES}
-          producer)
-
-  add_executable(kvs_producer_plugin_rtsp_demo ${KINESIS_VIDEO_GST_PLUGIN_DEMO_SRC}/kvs_producer_plugin_rtsp_demo.cpp)
-  target_link_libraries(kvs_producer_plugin_rtsp_demo
-          ${KVSSINK_DEMO_LIBRARIES})
-
-  add_executable(gstkvsplugintest ${KINESIS_VIDEO_GST_PLUGIN_SRC}/gstkvstest.cpp)
-  target_link_libraries(gstkvsplugintest
-         ${GST_CHECK_LIBRARIES}
-         ${KVSSINK_DEMO_LIBRARIES})
+          )
 endif()

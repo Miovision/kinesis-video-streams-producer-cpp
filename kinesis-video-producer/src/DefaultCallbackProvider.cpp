@@ -2,6 +2,7 @@
 
 #include "DefaultCallbackProvider.h"
 #include "Version.h"
+#include <string>
 
 namespace com { namespace amazonaws { namespace kinesis { namespace video {
 
@@ -26,6 +27,17 @@ using std::tuple;
 using std::async;
 using std::launch;
 using Json::FastWriter;
+
+
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
 
 #define CURL_CLOSE_HANDLE_DELAY_IN_MILLIS               10
 #define MAX_CUSTOM_USER_AGENT_STRING_LENGTH            128
@@ -131,7 +143,7 @@ STATUS DefaultCallbackProvider::createStreamHandler(
                          std::unique_ptr<Request> request,
                          std::unique_ptr<const RequestSigner> request_signer,
                          string stream_name_str,
-                         PServiceCallContext service_call_ctx) -> auto {
+                         PServiceCallContext service_call_ctx) -> void {
         uint64_t custom_data = service_call_ctx->customData;
 
         // Wait for the specified amount of time before calling
@@ -217,7 +229,7 @@ STATUS DefaultCallbackProvider::tagResourceHandler(
                          std::unique_ptr<Request> request,
                          std::unique_ptr<const RequestSigner> request_signer,
                          string stream_arn_str,
-                         PServiceCallContext service_call_ctx) -> auto {
+                         PServiceCallContext service_call_ctx) -> void {
 
         uint64_t custom_data = service_call_ctx->customData;
 
@@ -282,7 +294,7 @@ STATUS DefaultCallbackProvider::describeStreamHandler(
                          std::unique_ptr<Request> request,
                          std::unique_ptr<const RequestSigner> request_signer,
                          string stream_name_str,
-                         PServiceCallContext service_call_ctx) -> auto {
+                         PServiceCallContext service_call_ctx) -> void {
         uint64_t custom_data = service_call_ctx->customData;
 
         // Wait for the specified amount of time before calling
@@ -409,7 +421,7 @@ STATUS DefaultCallbackProvider::streamingEndpointHandler(
                          std::unique_ptr<Request> request,
                          std::unique_ptr<const RequestSigner> request_signer,
                          string stream_name_str,
-                         PServiceCallContext service_call_ctx) -> auto {
+                         PServiceCallContext service_call_ctx) -> void {
         uint64_t custom_data = service_call_ctx->customData;
 
         // Wait for the specified amount of time before calling
@@ -546,9 +558,9 @@ STATUS DefaultCallbackProvider::putStreamHandler(
     request->setHeader("x-amzn-stream-name", stream_name);
     // Producer start time in putMedia call takes a format of "seconds_from_epoch.milliseconds"
     UINT64 timestamp_millis = start_timestamp / HUNDREDS_OF_NANOS_IN_A_MILLISECOND;
-    string timestamp = std::to_string(timestamp_millis / 1000) + "." + std::to_string(timestamp_millis % 1000);
+    string timestamp = patch::to_string(timestamp_millis / 1000) + "." + patch::to_string(timestamp_millis % 1000);
     request->setHeader("x-amzn-producer-start-timestamp", timestamp);
-    request->setHeader("x-amzn-fragment-acknowledgment-required", std::to_string(do_ack));
+    request->setHeader("x-amzn-fragment-acknowledgment-required", patch::to_string(do_ack));
     request->setHeader("x-amzn-fragment-timecode-type", absolute_fragment_timestamp ? "ABSOLUTE" : "RELATIVE");
     request->setHeader("transfer-encoding", "chunked");
     request->setHeader("connection", "keep-alive");
@@ -559,7 +571,7 @@ STATUS DefaultCallbackProvider::putStreamHandler(
                          std::unique_ptr<Request> request,
                          std::unique_ptr<const RequestSigner> request_signer,
                          string stream_name_str,
-                         PServiceCallContext service_call_ctx) -> auto {
+                         PServiceCallContext service_call_ctx) -> void {
         uint64_t custom_data = service_call_ctx->customData;
 
         // Wait for the specified amount of time before calling
@@ -609,114 +621,114 @@ STATUS DefaultCallbackProvider::putStreamHandler(
     thread worker(async_call, this_obj, state, move(request), move(request_signer), stream_name_str, service_call_ctx);
     worker.detach();
 
-    // Return 200 to Kinesis Video SDK on successful connection establishment as the POST is theoretically infinite.
-    STATUS status = putStreamResultEvent(service_call_ctx->customData, SERVICE_CALL_RESULT_OK, upload_handle);
+	    // Return 200 to Kinesis Video SDK on successful connection establishment as the POST is theoretically infinite.
+	    STATUS status = putStreamResultEvent(service_call_ctx->customData, SERVICE_CALL_RESULT_OK, upload_handle);
 
-    this_obj->notifyResult(status, custom_data);
+	    this_obj->notifyResult(status, custom_data);
 
-    return status;
-}
+	    return status;
+	}
 
-void DefaultCallbackProvider::shutdownStream(STREAM_HANDLE stream_handle) {
-    std::unique_lock<std::recursive_mutex> lock(active_streams_mutex_);
+	void DefaultCallbackProvider::shutdownStream(STREAM_HANDLE stream_handle) {
+	    std::unique_lock<std::recursive_mutex> lock(active_streams_mutex_);
 
-    // Iterate over the map and make sure to shutdown all the ongoing states
-    auto map = active_streams_.getMap();
-    for (std::map<UINT64, std::shared_ptr<OngoingStreamState>>::iterator iter = map.begin();
-         iter != map.end();
-         iter++) {
-        auto state = iter->second;
-        LOG_DEBUG("Shutting down stream: "
-                          << state->getStreamName()
-                          << ", upload handle: "
-                          << state->getUploadHandle()
-                          << ", is EOS: "
-                          << state->isEndOfStream()
-                          << ", is in Shutdown: "
-                          << state->isShutdown());
-        if (nullptr != state && stream_handle == state->getStreamHandle()) {
-            state->shutdown();
+	    // Iterate over the map and make sure to shutdown all the ongoing states
+	    auto map = active_streams_.getMap();
+	    for (std::map<UINT64, std::shared_ptr<OngoingStreamState>>::iterator iter = map.begin();
+		 iter != map.end();
+		 iter++) {
+		auto state = iter->second;
+		LOG_DEBUG("Shutting down stream: "
+				  << state->getStreamName()
+				  << ", upload handle: "
+				  << state->getUploadHandle()
+				  << ", is EOS: "
+				  << state->isEndOfStream()
+				  << ", is in Shutdown: "
+				  << state->isShutdown());
+		if (nullptr != state && stream_handle == state->getStreamHandle()) {
+		    state->shutdown();
 
-            auto response = state->getResponse();
-            if (nullptr != response) {
-                response->terminate();
-            }
-        }
-    }
-}
+		    auto response = state->getResponse();
+		    if (nullptr != response) {
+			response->terminate();
+		    }
+		}
+	    }
+	}
 
-STATUS DefaultCallbackProvider::streamDataAvailableHandler(UINT64 custom_data,
-                                                           STREAM_HANDLE stream_handle,
-                                                           PCHAR stream_name,
-                                                           UPLOAD_HANDLE stream_upload_handle,
-                                                           UINT64 duration_available,
-                                                           UINT64 size_available) {
-    LOG_TRACE("streamDataAvailableHandler invoked for stream: "
-                      << stream_name
-                      << " and stream upload handle: "
-                      << stream_upload_handle);
+	STATUS DefaultCallbackProvider::streamDataAvailableHandler(UINT64 custom_data,
+								   STREAM_HANDLE stream_handle,
+								   PCHAR stream_name,
+								   UPLOAD_HANDLE stream_upload_handle,
+								   UINT64 duration_available,
+								   UINT64 size_available) {
+	    LOG_TRACE("streamDataAvailableHandler invoked for stream: "
+			      << stream_name
+			      << " and stream upload handle: "
+			      << stream_upload_handle);
 
-    auto this_obj = reinterpret_cast<DefaultCallbackProvider *>(custom_data);
-    if (IS_VALID_UPLOAD_HANDLE(stream_upload_handle)) {
-        std::unique_lock<std::recursive_mutex> lock(this_obj->active_streams_mutex_);
-        auto state = this_obj->active_streams_.get(stream_upload_handle);
-        if (nullptr != state && !state->isEndOfStream()) {
-            state->noteDataAvailable(duration_available, size_available);
-        }
-    }
+	    auto this_obj = reinterpret_cast<DefaultCallbackProvider *>(custom_data);
+	    if (IS_VALID_UPLOAD_HANDLE(stream_upload_handle)) {
+		std::unique_lock<std::recursive_mutex> lock(this_obj->active_streams_mutex_);
+		auto state = this_obj->active_streams_.get(stream_upload_handle);
+		if (nullptr != state && !state->isEndOfStream()) {
+		    state->noteDataAvailable(duration_available, size_available);
+		}
+	    }
 
-    auto stream_data_available_callback = this_obj->stream_callback_provider_->getStreamDataAvailableCallback();
-    if (nullptr != stream_data_available_callback) {
-        return stream_data_available_callback(this_obj->stream_callback_provider_->getCallbackCustomData(),
-                                              stream_handle,
-                                              stream_name,
-                                              stream_upload_handle,
-                                              duration_available,
-                                              size_available);
-    } else {
-        return STATUS_SUCCESS;
-    }
-}
+	    auto stream_data_available_callback = this_obj->stream_callback_provider_->getStreamDataAvailableCallback();
+	    if (nullptr != stream_data_available_callback) {
+		return stream_data_available_callback(this_obj->stream_callback_provider_->getCallbackCustomData(),
+						      stream_handle,
+						      stream_name,
+						      stream_upload_handle,
+						      duration_available,
+						      size_available);
+	    } else {
+		return STATUS_SUCCESS;
+	    }
+	}
 
-STATUS DefaultCallbackProvider::streamClosedHandler(UINT64 custom_data,
-                                                    STREAM_HANDLE stream_handle,
-                                                    UPLOAD_HANDLE stream_upload_handle) {
-    LOG_DEBUG("streamClosedHandler invoked for upload handle: " << stream_upload_handle);
+	STATUS DefaultCallbackProvider::streamClosedHandler(UINT64 custom_data,
+							    STREAM_HANDLE stream_handle,
+							    UPLOAD_HANDLE stream_upload_handle) {
+	    LOG_DEBUG("streamClosedHandler invoked for upload handle: " << stream_upload_handle);
 
-    auto this_obj = reinterpret_cast<DefaultCallbackProvider *>(custom_data);
-    if (IS_VALID_UPLOAD_HANDLE(stream_upload_handle)) {
-        std::unique_lock<std::recursive_mutex> lock(this_obj->active_streams_mutex_);
+	    auto this_obj = reinterpret_cast<DefaultCallbackProvider *>(custom_data);
+	    if (IS_VALID_UPLOAD_HANDLE(stream_upload_handle)) {
+		std::unique_lock<std::recursive_mutex> lock(this_obj->active_streams_mutex_);
 
-        auto state = this_obj->active_streams_.get(stream_upload_handle);
-        if (nullptr != state) {
-            // Remove from the map
-            this_obj->active_streams_.remove(stream_upload_handle);
+		auto state = this_obj->active_streams_.get(stream_upload_handle);
+		if (nullptr != state) {
+		    // Remove from the map
+		    this_obj->active_streams_.remove(stream_upload_handle);
 
-            // Set EOS and terminate
-            if (!state->isEndOfStream()) {
-                state->endOfStream();
+		    // Set EOS and terminate
+		    if (!state->isEndOfStream()) {
+			state->endOfStream();
 
-                // Pulse the awaiting threads
-                state->noteDataAvailable(0, 0);
-            }
+			// Pulse the awaiting threads
+			state->noteDataAvailable(0, 0);
+		    }
 
-            auto curl_response = state->getResponse();
-            // Close the connection
-            if (nullptr != curl_response) {
-                curl_response->terminate();
-            }
-        }
-    }
+		    auto curl_response = state->getResponse();
+		    // Close the connection
+		    if (nullptr != curl_response) {
+			curl_response->terminate();
+		    }
+		}
+	    }
 
-    auto stream_eos_callback = this_obj->stream_callback_provider_->getStreamClosedCallback();
-    if (nullptr != stream_eos_callback) {
-        // Await for some time for CURL to terminate properly before triggering the callback on another thread
-        // as the calling thread is likely to be the curls thread and most implementations have a single threaded
-        // pool which we can't block.
-        auto async_call = [](const StreamClosedFunc stream_eos_callback,
-                             UINT64 custom_data,
-                             STREAM_HANDLE stream_handle,
-                             UPLOAD_HANDLE stream_upload_handle) -> auto {
+	    auto stream_eos_callback = this_obj->stream_callback_provider_->getStreamClosedCallback();
+	    if (nullptr != stream_eos_callback) {
+		// Await for some time for CURL to terminate properly before triggering the callback on another thread
+		// as the calling thread is likely to be the curls thread and most implementations have a single threaded
+		// pool which we can't block.
+		auto async_call = [](const StreamClosedFunc stream_eos_callback,
+				     UINT64 custom_data,
+				     STREAM_HANDLE stream_handle,
+				     UPLOAD_HANDLE stream_upload_handle) -> void {
             // Wait for the specified amount of time before calling the provided callback
             // NOTE: We will add an extra time for curl handle to settle and close the stream.
             std::this_thread::sleep_for(std::chrono::milliseconds(TIMEOUT_AFTER_STREAM_STOPPED +

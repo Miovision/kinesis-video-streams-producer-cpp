@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "mkunique.h"
+
 #include "com/amazonaws/kinesis/video/client/Include.h"
 #include "AwsV4Signer.h"
 #include "CurlCallManager.h"

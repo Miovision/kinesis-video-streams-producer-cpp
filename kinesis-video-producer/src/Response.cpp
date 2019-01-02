@@ -109,8 +109,8 @@ shared_ptr<Response> Response::create(Request &request) {
         //curl_easy_setopt(response->m_curl, CURLOPT_CAPATH, >>> client should pass in path <<<);
 
         // Enforce the public cert verification - even though this is the default
-        curl_easy_setopt(response->curl_, CURLOPT_SSL_VERIFYPEER, 1L);
-        curl_easy_setopt(response->curl_, CURLOPT_SSL_VERIFYHOST, 2L);
+        curl_easy_setopt(response->curl_, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(response->curl_, CURLOPT_SSL_VERIFYHOST, 0L);
         curl_easy_setopt(response->curl_, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
     }
 

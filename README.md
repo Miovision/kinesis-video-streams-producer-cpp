@@ -1,5 +1,24 @@
-### Amazon Kinesis Video Streams Producer SDK C/C++
+### Amazon Kinesis Video Streams Producer SDK C/C++ (With Miovision Changes)
 ----
+
+### Miovision Introduction
+----
+
+This library is the core of the kinesis video streamer sub-application. It has been modified from stock to remove excess dependencies, and build scripts modified to support our rather unique build artifacts.
+
+This library is pre-compiled for you, in the third-party directory. If you need to make any changes to it, you will need a complete built copy of the BSP, including a later libcurl (See libcurl instructions in bundle folder)
+
+Once you have your BSP copy, substitute it into the `kinesis-video-native-build/CMakeLists.txt` file in the appropriate place (search for MIOVISION). 
+
+Then, run CMake:
+
+```
+CMAKE_CXX_COMPILER=/usr/local/bin/arm-linux-gnueabi-20140823-g++ CMAKE_C_COMPILER=/usr/local/bin/arm-linux-gnueabi-20140823-gcc cmake .
+make
+```
+
+
+
 ### Introduction
 ----
 Amazon Kinesis Video Streams makes it easy to securely stream video from connected devices to AWS for analytics, machine learning (ML), and other processing.

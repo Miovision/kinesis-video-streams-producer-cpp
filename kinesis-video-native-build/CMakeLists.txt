@@ -83,16 +83,17 @@ endif()
 if(NOT BUILD_JNI_ONLY AND (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
   find_package(PkgConfig REQUIRED)
 
-  #pkg_check_modules (CRYPTO       REQUIRED   libcrypto)
-  #pkg_check_modules (CURL         REQUIRED   libcurl)
-  #pkg_check_modules (SSL          REQUIRED   libssl)
- 
-  set(CURL_INCLUDE_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/include)
-  set(CRYPTO_INCLUDE_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/include)
-  set(SSL_INCLUDE_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/include)
-  set(SSL_LIBRARY_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/lib)
-  set(CURL_LIBRARY_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/lib)
-  set(CRYPTO_LIBRARY_DIRS /home/aroth/bsp/bsp2/spectrum-smartlink-bsp/staging/lib)
+  #MIOVISION USERS: Substitute in the path to your built BSP folder here:
+  set(PATH_TO_BSP /home/aroth/bsp/bsp2/spectrum-smartlink-bsp)
+
+  set(CURL_INCLUDE_DIRS ${PATH_TO_BSP}/staging/include)
+  set(CRYPTO_INCLUDE_DIRS ${PATH_TO_BSP}/staging/include)
+  set(SSL_INCLUDE_DIRS ${PATH_TO_BSP}/staging/include)
+  set(SSL_LIBRARY_DIRS ${PATH_TO_BSP}/staging/lib)
+  set(CURL_LIBRARY_DIRS ${PATH_TO_BSP}/staging/lib)
+  set(CRYPTO_LIBRARY_DIRS ${PATH_TO_BSP}.staging/lib)
+
+
   set(CRYPTO_LIBRARIES -lcrypto -ldl)
   set(CRYPTO_LIBRARIES -lssl -lcrypto -ldl)
   set(CRYPTO_LIBRARIES  -lcurl -lcrypto -lssl -lssh2 -lidn -lz -ldl)

@@ -1,4 +1,5 @@
 #pragma once
+#if (_cplusplus < 201402L)
 
 #include <cstddef>
 #include <memory>
@@ -35,3 +36,4 @@ namespace std {
         typename _Unique_if<T>::_Known_bound
         make_unique(Args&&...) = delete;
 }
+#endif

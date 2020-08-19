@@ -6,6 +6,25 @@ set(EXEC_NAME start)
 
 set(CMAKE_CXX_STANDARD 14)
 
+
+########## MIOVISION EDIT START ##########
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR arm)
+
+set(CMAKE_SYSROOT /opt/royaloak/1.0/sysroots/aarch64-miovision-linux)
+
+set(tools /opt/royaloak/1.0/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-miovision-linux)
+set(CMAKE_C_COMPILER ${tools}/aarch64-miovision-linux-gcc)
+set(CMAKE_CXX_COMPILER ${tools}/aarch64-miovision-linux-g++)
+set(CMAKE_CXX_FLAGS -D_cplusplus=201402L)
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+########## MIOVISION EDIT END ##########
+
+
 if(DEFINED ENV{KINESIS_VIDEO_PIC_SRC})
     set(KINESIS_VIDEO_PIC_SRC $ENV{KINESIS_VIDEO_PIC_SRC})
 else()
@@ -83,21 +102,17 @@ endif()
 if(NOT BUILD_JNI_ONLY AND (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
   find_package(PkgConfig REQUIRED)
 
-  #MIOVISION USERS: Substitute in the path to your built BSP folder here:
-  set(PATH_TO_BSP /home/aroth/bsp/bsp2/spectrum-smartlink-bsp)
 
-  set(CURL_INCLUDE_DIRS ${PATH_TO_BSP}/staging/include)
-  set(CRYPTO_INCLUDE_DIRS ${PATH_TO_BSP}/staging/include)
-  set(SSL_INCLUDE_DIRS ${PATH_TO_BSP}/staging/include)
-  set(SSL_LIBRARY_DIRS ${PATH_TO_BSP}/staging/lib)
-  set(CURL_LIBRARY_DIRS ${PATH_TO_BSP}/staging/lib)
-  set(CRYPTO_LIBRARY_DIRS ${PATH_TO_BSP}.staging/lib)
+  ########## MIOVISION EDIT START ##########
+  set(CURL_INCLUDE_DIRS ${CMAKE_SYSROOT}/usr/include)
+  set(CURL_LIBRARY_DIRS ${CMAKE_SYSROOT}/usr/lib)
+  set(CRYPTO_INCLUDE_DIRS ${CMAKE_SYSROOT}/usr/include)
+  set(CRYPTO_LIBRARY_DIRS ${CMAKE_SYSROOT}/usr/lib)
+  set(SSL_INCLUDE_DIRS ${CMAKE_SYSROOT}/usr/include)
+  set(SSL_LIBRARY_DIRS ${CMAKE_SYSROOT}/usr/lib)
 
-
-  set(CRYPTO_LIBRARIES -lcrypto -ldl)
-  set(CRYPTO_LIBRARIES -lssl -lcrypto -ldl)
-  set(CRYPTO_LIBRARIES  -lcurl -lcrypto -lssl -lssh2 -lidn -lz -ldl)
-
+  set(CRYPTO_LIBRARIES -lcurl -lcrypto -lssl -lssh2 -lz -ldl)
+  ########## MIOVISION EDIT END ##########
 
 
   set(OPEN_SRC_INCLUDE_DIRS

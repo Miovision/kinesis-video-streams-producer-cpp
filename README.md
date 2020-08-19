@@ -4,19 +4,51 @@
 ### Miovision Introduction
 ----
 
-This library is the core of the kinesis video streamer sub-application. It has been modified from stock to remove excess dependencies, and build scripts modified to support our rather unique build artifacts.
+This library is the core of the kinesis video streamer sub-application. It has
+been modified from stock to remove excess dependencies, and build scripts
+modified to support our rather unique build artifacts.
 
-This library is pre-compiled for you, in the third-party directory. If you need to make any changes to it, you will need a complete built copy of the BSP, including a later libcurl (See libcurl instructions in bundle folder)
+This library is pre-compiled for you, in the third-party directory. If you need
+to make any changes to it, you will need to recomplie:
 
-Once you have your BSP copy, substitute it into the `kinesis-video-native-build/CMakeLists.txt` file in the appropriate place (search for MIOVISION). 
+CTM Builds
 
-Then, run CMake:
+kinesis-video-native-build/CMakeLists.txt has already been customized for this
+purpose. To compile:
+* Run docker
+* cd kinesis-video-native-build
+* cmake .
+* make
 
-```
-CMAKE_CXX_COMPILER=/usr/local/bin/arm-linux-gnueabi-20140823-g++ CMAKE_C_COMPILER=/usr/local/bin/arm-linux-gnueabi-20140823-gcc cmake .
-make
-```
+BSP4 Builds
 
+Modify kinesis-video-native-build/CMakeLists.txt as necessary. See sections
+labelled MIOVISION. Then:
+* Run docker
+* cd kinesis-video-native-build
+* cmake .
+* make
+
+BSP3 Builds
+
+Obtain a a complete built copy of the OpenGear BSP, including a later libcurl
+(See libcurl instructions in bundle folder).
+* Modify kinesis-video-native-build/CMakeLists.txt as necessary. See sections
+  labelled MIOVISION. Use the compilers at
+  /usr/local/bin/arm-linux-gnueabi-20140823-g++ and
+  /usr/local/bin/arm-linux-gnueabi-20140823-gcc
+* Run docker
+* cd kinesis-video-native-build
+* cmake .
+* make
+
+NOTE: Personally, I always delete any old cmake build artifacts berfore
+rerunning cmake. I don't trust that it regenerates things properly. This
+includes:
+* CMakeCache.txt
+* CMakeFiles/
+* Makefile
+* cmake_install.cmake
 
 
 ### Introduction

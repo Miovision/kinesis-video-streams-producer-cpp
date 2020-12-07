@@ -20,7 +20,9 @@ public:
      *
      * @return Custom data
      */
-    virtual UINT64 getCallbackCustomData() = 0;
+    virtual UINT64 getCallbackCustomData() {
+        return 0;
+    };
 
     /**
      * Reports a ready state for the client.

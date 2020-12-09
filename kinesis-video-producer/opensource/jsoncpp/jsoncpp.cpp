@@ -4165,6 +4165,12 @@ Value& Path::make(Value& root) const {
 #endif
 #endif
 
+#ifdef X86_BUILD
+#include <math.h>
+#define isfinite std::isfinite
+#endif
+
+
 #if defined(_MSC_VER)
 #if !defined(WINCE) && defined(__STDC_SECURE_LIB__) && _MSC_VER >= 1500 // VC++ 9.0 and above
 #define snprintf sprintf_s

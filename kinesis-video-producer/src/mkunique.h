@@ -1,6 +1,10 @@
 #pragma once
-#if (_cplusplus < 201402L)
 
+#ifdef X86_BUILD 
+#include <memory>
+#else
+
+#if (_cplusplus < 201402L)
 #include <cstddef>
 #include <memory>
 #include <type_traits>
@@ -36,4 +40,5 @@ namespace std {
         typename _Unique_if<T>::_Known_bound
         make_unique(Args&&...) = delete;
 }
+#endif
 #endif

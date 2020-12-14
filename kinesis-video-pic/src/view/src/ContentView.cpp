@@ -430,6 +430,7 @@ STATUS contentViewAddItem(PContentView pContentView, UINT64 timestamp, UINT64 du
         pHead = GET_VIEW_ITEM_FROM_INDEX(pRollingView, pRollingView->head - 1);
         pTail = GET_VIEW_ITEM_FROM_INDEX(pRollingView, pRollingView->tail);
 
+        DLOGV("Checking timestamp continuity... %llu+%llu=%llu, %llu", pHead->timestamp,pHead->duration, pHead->timestamp + pHead->duration, timestamp);
         // Check the continuity with the existing head item (if any exist)
         CHK(pHead->timestamp + pHead->duration <= timestamp, STATUS_CONTENT_VIEW_INVALID_TIMESTAMP);
 

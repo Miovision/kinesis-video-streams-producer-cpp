@@ -220,7 +220,7 @@ STATUS getKinesisVideoMetrics(CLIENT_HANDLE clientHandle, PClientMetrics pKinesi
     UINT32 i, viewAllocationSize;
     PKinesisVideoClient pKinesisVideoClient = FROM_CLIENT_HANDLE(clientHandle);
 
-    DLOGI("Get the memory metrics size.");
+    DLOGV("Get the memory metrics size.");
 
     CHK(pKinesisVideoClient != NULL && pKinesisVideoMetrics != NULL, STATUS_NULL_ARG);
     CHK(pKinesisVideoMetrics->version <= CLIENT_METRICS_CURRENT_VERSION, STATUS_INVALID_CLIENT_METRICS_VERSION);
@@ -259,7 +259,7 @@ STATUS getKinesisVideoStreamMetrics(STREAM_HANDLE streamHandle, PStreamMetrics p
     STATUS retStatus = STATUS_SUCCESS;
     PKinesisVideoStream pKinesisVideoStream = FROM_STREAM_HANDLE(streamHandle);
 
-    DLOGI("Get stream metrics for Stream %016" PRIx64 ".", streamHandle);
+    DLOGV("Get stream metrics for Stream %016" PRIx64 ".", streamHandle);
 
     CHK(pKinesisVideoStream != NULL && pKinesisVideoStream->pKinesisVideoClient != NULL && pStreamMetrics != NULL, STATUS_NULL_ARG);
 

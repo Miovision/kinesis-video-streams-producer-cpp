@@ -765,7 +765,7 @@ STATUS DefaultCallbackProvider::streamErrorHandler(UINT64 custom_data,
                                                    STREAM_HANDLE stream_handle,
                                                    UINT64 fragment_timecode,
                                                    STATUS status) {
-    LOG_DEBUG("streamErrorHandler invoked");
+    LOG_TRACE("streamErrorHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Terminate the existing stream if any
@@ -790,7 +790,7 @@ STATUS DefaultCallbackProvider::streamErrorHandler(UINT64 custom_data,
 }
 
 STATUS DefaultCallbackProvider::clientReadyHandler(UINT64 custom_data, CLIENT_HANDLE client_handle) {
-    LOG_DEBUG("clientReadyHandler invoked");
+    LOG_TRACE("clientReadyHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Call the client callback if any specified
@@ -803,7 +803,7 @@ STATUS DefaultCallbackProvider::clientReadyHandler(UINT64 custom_data, CLIENT_HA
 }
 
 STATUS DefaultCallbackProvider::storageOverflowPressureHandler(UINT64 custom_data, UINT64 bytes_remaining) {
-    LOG_DEBUG("storageOverflowPressureHandler invoked");
+    LOG_TRACE("storageOverflowPressureHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Call the client callback if any specified
@@ -816,7 +816,7 @@ STATUS DefaultCallbackProvider::storageOverflowPressureHandler(UINT64 custom_dat
 }
 
 STATUS DefaultCallbackProvider::streamUnderflowReportHandler(UINT64 custom_data, STREAM_HANDLE stream_handle) {
-    LOG_DEBUG("streamUnderflowReportHandler invoked");
+    LOG_TRACE("streamUnderflowReportHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Call the client callback if any specified
@@ -831,7 +831,7 @@ STATUS DefaultCallbackProvider::streamUnderflowReportHandler(UINT64 custom_data,
 STATUS DefaultCallbackProvider::streamLatencyPressureHandler(UINT64 custom_data,
                                                              STREAM_HANDLE stream_handle,
                                                              UINT64 buffer_duration) {
-    LOG_DEBUG("streamLatencyPressureHandler invoked");
+    LOG_TRACE("streamLatencyPressureHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Call the client callback if any specified
@@ -848,7 +848,7 @@ STATUS DefaultCallbackProvider::streamLatencyPressureHandler(UINT64 custom_data,
 STATUS DefaultCallbackProvider::droppedFrameReportHandler(UINT64 custom_data,
                                                           STREAM_HANDLE stream_handle,
                                                           UINT64 timecode) {
-    LOG_DEBUG("droppedFrameReportHandler invoked");
+    LOG_TRACE("droppedFrameReportHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Call the client callback if any specified
@@ -865,7 +865,7 @@ STATUS DefaultCallbackProvider::droppedFrameReportHandler(UINT64 custom_data,
 STATUS DefaultCallbackProvider::droppedFragmentReportHandler(UINT64 custom_data,
                                                              STREAM_HANDLE stream_handle,
                                                              UINT64 timecode) {
-    LOG_DEBUG("droppedFragmentReportHandler invoked");
+    LOG_TRACE("droppedFragmentReportHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Call the client callback if any specified
@@ -882,7 +882,7 @@ STATUS DefaultCallbackProvider::droppedFragmentReportHandler(UINT64 custom_data,
 STATUS DefaultCallbackProvider::streamConnectionStaleHandler(UINT64 custom_data,
                                                              STREAM_HANDLE stream_handle,
                                                              UINT64 last_ack_duration) {
-    LOG_DEBUG("streamConnectionStaleHandler invoked");
+    LOG_TRACE("streamConnectionStaleHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Call the client callback if any specified
@@ -897,7 +897,7 @@ STATUS DefaultCallbackProvider::streamConnectionStaleHandler(UINT64 custom_data,
 }
 
 STATUS DefaultCallbackProvider::streamReadyHandler(UINT64 custom_data, STREAM_HANDLE stream_handle) {
-    LOG_DEBUG("streamReadyHandler invoked");
+    LOG_TRACE("streamReadyHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Call the client callback if any specified
@@ -912,7 +912,7 @@ STATUS DefaultCallbackProvider::streamReadyHandler(UINT64 custom_data, STREAM_HA
 STATUS DefaultCallbackProvider::fragmentAckReceivedHandler(UINT64 custom_data,
                                                            STREAM_HANDLE stream_handle,
                                                            PFragmentAck fragment_ack) {
-    LOG_DEBUG("fragmentAckReceivedHandler invoked");
+    LOG_TRACE("fragmentAckReceivedHandler invoked");
     auto this_obj = reinterpret_cast<DefaultCallbackProvider*>(custom_data);
 
     // Call the client callback if any specified
